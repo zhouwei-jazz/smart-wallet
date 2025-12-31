@@ -78,7 +78,18 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   }, [supabase.auth, coreInitialized])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    try {
+      console.log('Signing out user...');
+      await supabase.auth.signOut();
+      console.log('User signed out successfully');
+      // 清除本地存储
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   }
 
   const value = {

@@ -93,8 +93,9 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     if (!isClient) return;
     try {
+      console.log('Signing out user...');
       await supabase.auth.signOut();
-      console.log('User signed out');
+      console.log('User signed out successfully');
     } catch (error) {
       console.error('Error signing out:', error);
     }

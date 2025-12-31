@@ -63,7 +63,11 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
                 </p>
               </div>
               <button
-                onClick={signOut}
+                onClick={async () => {
+                  if (confirm('确定要退出登录吗？')) {
+                    await signOut();
+                  }
+                }}
                 className="text-xs text-slate-400 hover:text-slate-300 px-2 py-1 rounded hover:bg-white/10"
                 title="退出登录"
               >

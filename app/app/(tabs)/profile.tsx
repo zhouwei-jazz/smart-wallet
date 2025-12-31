@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useSupabase } from '@/components/providers/supabase-provider';
 import { useRouter } from 'expo-router';
 
@@ -27,8 +27,30 @@ export default function ProfileScreen() {
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    router.push('/(auth)/login' as any);
+    Alert.alert(
+      '退出登录',
+      '确定要退出登录吗？',
+      [
+        {
+          text: '取消',
+          style: 'cancel',
+        },
+        {
+          text: '退出',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              console.log('User confirmed sign out');
+              await signOut();
+              // 不需要手动导航，认证状态变化会自动处理路由
+            } catch (error) {
+              console.error('Sign out error:', error);
+              Alert.alert('退出失败', '请重试');
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
