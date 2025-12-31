@@ -1,4 +1,4 @@
-# 📤 GitHub 上传指南
+GitHub 上传指南
 
 ## 🔐 上传前的安全检查
 
@@ -58,7 +58,7 @@ git commit -m "🎉 Initial commit: Smart Wallet 跨端智能记账应用
 ### 5. 连接本地仓库到 GitHub
 ```bash
 # 添加远程仓库（替换为你的 GitHub 用户名和仓库名）
-git remote add origin https://github.com/YOUR_USERNAME/smart-wallet.git
+git remote add origin https://github.com/zhouwei-jazz/smart-wallet.git
 
 # 推送到 GitHub
 git branch -M main
