@@ -1,0 +1,26 @@
+{
+  "name": "smart-wallet",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Smart Wallet - 跨端智能记账应用",
+  "scripts": {
+    "dev:web": "cd web && npm run dev",
+    "dev:app": "cd app && npm start",
+    "build:web": "cd web && npm run build",
+    "build:app": "cd app && npm run android",
+    "install:all": "npm install --no-workspaces && cd web && npm install && cd ../app && npm install && cd ../packages/core && npm install",
+    "clean": "rmdir /s /q node_modules packages\\core\\node_modules web\\node_modules app\\node_modules 2>nul || echo Cleaned"
+  },
+  "keywords": ["smart-wallet", "expense-tracker", "finance"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.12",
+    "@insforge/sdk": "^1.0.0",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "prettier": "^3"
+  }
+}

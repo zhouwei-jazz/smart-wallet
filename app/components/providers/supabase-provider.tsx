@@ -1,0 +1,115 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
+import { Platform } from 'react-native';
+import { initSupabaseClient } from '@smart-wallet/core';
+
+interface SupabaseContextType {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+}
+
+const SupabaseContext = createContext<SupabaseContextType>({
+  user: null,
+  session: null,
+  loading: true,
+  signOut: async () => {},
+});
+
+export const useSupabase = () => {
+  const context = useContext(SupabaseContext);
+  if (!context) {
+    throw new Error('useSupabase must be used within a SupabaseProvider');
+  }
+  return context;
+};
+
+export function SupabaseProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+  const [coreInitialized, setCoreInitialized] = useState(false);
+
+  useEffect(() => {
+    // 确保只在客户端运行
+    if (Platform.OS === 'web' && typeof window === 'undefined') {
+      setLoading(false);
+      return;
+    }
+    
+    setIsClient(true);
+
+    // 初始化核心包的 Supabase 客户端
+    if (!coreInitialized) {
+      const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (supabaseUrl && supabaseAnonKey) {
+        try {
+          initSupabaseClient({
+            url: supabaseUrl,
+            anonKey: supabaseAnonKey,
+          });
+          console.log('✅ Supabase core client initialized for mobile app');
+          setCoreInitialized(true);
+        } catch (error) {
+          console.error('Failed to initialize Supabase core client:', error);
+        }
+      }
+    }
+
+    // 获取初始会话
+    const getInitialSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Initial session:', session ? 'Found' : 'Not found');
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error('Error getting initial session:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getInitialSession();
+
+    // 监听认证状态变化
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session ? 'Session exists' : 'No session');
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [coreInitialized]);
+
+  const signOut = async () => {
+    if (!isClient) return;
+    try {
+      await supabase.auth.signOut();
+      console.log('User signed out');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const value = {
+    user,
+    session,
+    loading,
+    signOut,
+  };
+
+  return (
+    <SupabaseContext.Provider value={value}>
+      {children}
+    </SupabaseContext.Provider>
+  );
+}

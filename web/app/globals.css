@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050816;
+  --foreground: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(circle at 20% 20%, #111827 0, #0b1220 25%, #050816 60%),
+    radial-gradient(circle at 80% 10%, #0f172a 0, #0b1220 30%, #050816 65%),
+    #050816;
+  color: var(--foreground);
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
